@@ -1,11 +1,12 @@
  <% include head %>
-<div>
-    <%= count%>
+<div style="text-align: center;">
+    <p style="color:green;"><%= count%></p>
     <p>Create new message</p>
     <form method="post" action="/NewMessage">
-        <input type="text" name="title" placeholder="Title"/>
+        <input type="text" name="title" placeholder="Title" style="width: 500px;"/>
         <br>
-        <textarea name="embed" placeholder="Embed code"></textarea>
+        <textarea name="embed" placeholder="Embed code"style="width: 500px;"></textarea>
+        <br>
         <input type="submit" value="Submit">
     </form>
 </div>
