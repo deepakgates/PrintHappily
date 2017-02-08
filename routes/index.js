@@ -1,9 +1,24 @@
+var constants = require('../constants');
 var express = require('express');
 var router = express.Router();
-
+var mongoose = require('mongoose');
+var autoIncrement = require('mongoose-auto-increment');
+mongoose.connect(constants.mongoPath);
+var db = mongoose.connection;
+db.on('error', function(){ console.log('DB connection error'); });
+db.once('open', function() {
+    console.log('DB connected');
+});
+autoIncrement.initialize(db);
+var messageSchema = mongoose.Schema({
+    title: String,
+    embed: String,
+});
+messageSchema.plugin(autoIncrement.plugin, 'message');
+var Message = mongoose.model('message', messageSchema);
 /* GET home page. */
-router.get('/', function (req, res, next) {
-    res.render('index', {title: 'Express'});
+router.get('/', function(req, res, next) {
+  res.render('index', { title: 'Express' });
 });
 
 router.get('/Valentines', function (req, res, next) {
@@ -65,6 +80,37 @@ router.get('/Valentines', function (req, res, next) {
     }
 
     res.render('valentines', {title: 'Express', data: returnData});
+});
+
+router.get('/NewMessage', function(req, res, next) {
+    res.render('new_message', { title: 'Express',count:'' });
+});
+
+router.post('/NewMessage', function(req, res, next) {
+
+    Message.nextCount(function(err, count) {
+        var newMessage = new Message({ title: req.body.title,embed:req.body.embed });
+        newMessage.save(function (err, data) {
+            if (err){
+                res.render('error', { error: error });
+            }else{
+                res.render('new_message', { title: 'Express',count:constants.siteRoot+'/Message/'+count });
+            }
+        });
+    });
+
+});
+router.get('/Message/:id*', function(req, res, next) {
+
+    Message.find({ _id: req.params.id }, function(err,data){
+        if(err){
+            res.render('error', { error: error });
+        }else{
+            console.log(data);
+            res.render('valentines', {title: 'Express', data: data[0].embed});
+        }
+    });
+
 });
 
 module.exports = router;
