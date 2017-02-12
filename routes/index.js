@@ -2,19 +2,19 @@ var constants = require('../constants');
 var express = require('express');
 var router = express.Router();
 var mongoose = require('mongoose');
-var autoIncrement = require('mongoose-auto-increment');
+// var autoIncrement = require('mongoose-auto-increment');
 mongoose.connect(constants.mongoPath);
 var db = mongoose.connection;
 db.on('error', function(){ console.log('DB connection error'); });
 db.once('open', function() {
     console.log('DB connected');
 });
-autoIncrement.initialize(db);
+// autoIncrement.initialize(db);
 var messageSchema = mongoose.Schema({
     title: String,
     embed: String,
 });
-messageSchema.plugin(autoIncrement.plugin, 'message');
+// messageSchema.plugin(autoIncrement.plugin, 'message');
 var Message = mongoose.model('message', messageSchema);
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -87,17 +87,17 @@ router.get('/NewMessage', function(req, res, next) {
 });
 
 router.post('/NewMessage', function(req, res, next) {
-
-    Message.nextCount(function(err, count) {
-        var newMessage = new Message({ title: req.body.title,embed:req.body.embed });
-        newMessage.save(function (err, data) {
-            if (err){
-                res.render('error', { error: error });
-            }else{
-                res.render('new_message', { title: 'Express',count:constants.siteRoot+'/Message/'+count });
-            }
-        });
+    var newMessage = new Message({ title: req.body.title,embed:req.body.embed });
+    newMessage.save(function (err, data) {
+        if (err){
+            res.render('error', { error: error });
+        }else{
+            res.render('new_message', { title: 'Express',count:constants.siteRoot+'/Message/'+newMessage._id });
+        }
     });
+    // Message.nextCount(function(err, count) {
+    //
+    // });
 
 });
 router.get('/Message/:id*', function(req, res, next) {
