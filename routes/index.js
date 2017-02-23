@@ -90,7 +90,7 @@ router.post('/NewMessage', function(req, res, next) {
     var newMessage = new Message({ title: req.body.title,embed:req.body.embed });
     newMessage.save(function (err, data) {
         if (err){
-            res.render('error', { error: error });
+            res.render('error', { error: err });
         }else{
             res.render('new_message', { title: 'Express',count:constants.siteRoot+'/Message/'+newMessage._id });
         }
@@ -102,12 +102,12 @@ router.post('/NewMessage', function(req, res, next) {
 });
 router.get('/Message/:id*', function(req, res, next) {
 
-    Message.find({ _id: req.params.id }, function(err,data){
+    Message.findOne({ _id: req.params.id }, function(err,data){
         if(err){
-            res.render('error', { error: error });
+            res.render('error', { error: err });
         }else{
             console.log(data);
-            res.render('valentines', {title: 'Express', data: data[0].embed});
+            res.render('view_message', {title: 'Express', data: data.embed});
         }
     });
 
