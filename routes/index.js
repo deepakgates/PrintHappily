@@ -23,9 +23,9 @@ var Message = mongoose.model('message', messageSchema);
 
 
 aws.config.update({
-    secretAccessKey: 'U7fC4AGze8NGCBW3nZby1a4XgKyR0yjI7ZYRbGBG',
-    accessKeyId: 'AKIAJO7RMJLWKE52B46Q',
-    region: 'us-west-2'
+    secretAccessKey: constants.secretAccessKey,
+    accessKeyId: constants.accessKeyId,
+    region: constants.region
 });
 var S3 = new aws.S3();
 var upload = multer({
