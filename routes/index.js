@@ -1,5 +1,8 @@
 var constants = require('../constants');
 var express = require('express');
+var aws = require('aws-sdk')
+var multer = require('multer')
+var multerS3 = require('multer-s3')
 var router = express.Router();
 var mongoose = require('mongoose');
 // var autoIncrement = require('mongoose-auto-increment');
@@ -13,9 +16,33 @@ db.once('open', function() {
 var messageSchema = mongoose.Schema({
     title: String,
     embed: String,
+    banner:String
 });
 // messageSchema.plugin(autoIncrement.plugin, 'message');
 var Message = mongoose.model('message', messageSchema);
+
+
+aws.config.update({
+    secretAccessKey: 'U7fC4AGze8NGCBW3nZby1a4XgKyR0yjI7ZYRbGBG',
+    accessKeyId: 'AKIAJO7RMJLWKE52B46Q',
+    region: 'us-west-2'
+});
+var S3 = new aws.S3();
+var upload = multer({
+    storage: multerS3({
+        s3: S3,
+        bucket: 'printhappily-banners',
+        acl: 'public-read',
+        metadata: function (req, file, cb) {
+            cb(null, {fieldName: file.fieldname});
+        },
+        key: function (req, file, cb) {
+            var random = Math.floor(Math.random() * 9999) + 1;
+            cb(null, Date.now().toString()+"_"+random+".jpg")
+        }
+    })
+})
+
 /* GET home page. */
 router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
@@ -86,8 +113,10 @@ router.get('/NewMessage', function(req, res, next) {
     res.render('new_message', { title: 'Express',count:'' });
 });
 
-router.post('/NewMessage', function(req, res, next) {
-    var newMessage = new Message({ title: req.body.title,embed:req.body.embed });
+router.post('/NewMessage', upload.single('banner'),function(req, res, next) {
+
+    var banner = req.file.key;
+    var newMessage = new Message({ title: req.body.title,embed:req.body.embed,banner:banner });
     newMessage.save(function (err, data) {
         if (err){
             res.render('error', { error: err });
@@ -95,9 +124,7 @@ router.post('/NewMessage', function(req, res, next) {
             res.render('new_message', { title: 'Express',count:constants.siteRoot+'/Message/'+newMessage._id });
         }
     });
-    // Message.nextCount(function(err, count) {
-    //
-    // });
+
 
 });
 router.get('/Message/:id*', function(req, res, next) {
@@ -107,7 +134,9 @@ router.get('/Message/:id*', function(req, res, next) {
             res.render('error', { error: err });
         }else{
             console.log(data);
-            res.render('view_message', {title: 'Express', data: data.embed});
+            res.render('view_message', {title: 'Express', data: {
+                title:data.title,embed:data.embed,banner:data.banner
+            }});
         }
     });
 

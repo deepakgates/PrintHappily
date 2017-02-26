@@ -1,9 +1,19 @@
   <% include head %>
-  <div style="text-align: center;">
-      <img src="/images/banner_iradeo.jpg" alt=""/>
+  <div style="margin: 0px 110px;   font-size: 34px;">
+
+      <%= data.title==null?'':data.title %>
   </div>
-  <div>
-      <%- data %>
+  <div style="text-align: center;">
+      <%if (data.banner == null) { %>
+      <img src="/images/banner_iradeo.jpg" alt=""/>
+      <% } else{ %>
+      <img src="https://s3-us-west-2.amazonaws.com/printhappily-banners/<%= data.banner%>" alt=""/>
+      <% }%>
+
+  </div>
+
+  <div style="text-align: center">
+      <%- data.embed %>
   </div>
   <span style="display:none;">***</span>
   <script type="text/javascript" language="javascript" id="pnyxeDiscussItJs" src="https://www.pnyxe.shadow.com/PnyxeDiscussItJs.jsp"></script>

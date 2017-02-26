@@ -2,8 +2,10 @@
 <div style="text-align: center;">
     <p style="color:green;"><%= count%></p>
     <p>Create new message</p>
-    <form method="post" action="/NewMessage">
+    <form method="post" action="/NewMessage" enctype="multipart/form-data">
         <input type="text" name="title" placeholder="Title" style="width: 500px;"/>
+        <br>
+        <input type="file" name="banner" placeholder="Banner" style="width: 500px;"/>
         <br>
         <textarea name="embed" placeholder="Embed code"style="width: 500px;"></textarea>
         <br>
